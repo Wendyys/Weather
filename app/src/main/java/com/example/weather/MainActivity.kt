@@ -1,44 +1,39 @@
 package com.example.weather
 
-import android.app.ActionBar
+import android.Manifest.permission.*
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.provider.SyncStateContract
-import android.text.format.Time
 import android.util.Log
 import android.view.View
-import android.view.Window
 import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.baidu.location.*
-import com.example.weather.bean.*
+import com.baidu.location.LocationClient
+import com.baidu.location.LocationClientOption
+import com.example.weather.bean.AirData
+import com.example.weather.bean.CityInfo
+import com.example.weather.bean.ThreeDaysWeatherData
+import com.example.weather.bean.WeatherData
 import com.example.weather.network.NetworkApi
 import com.example.weather.utils.CityService
 import com.example.weather.utils.MyConstants
 import com.example.weather.utils.WeatherService
-import com.google.gson.Gson
 import com.hjq.permissions.OnPermission
+import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity(){
     lateinit var mLocationClient : LocationClient
-    private var mContentPanel : LinearLayout? = null
+    private var mContentPanel : RelativeLayout? = null
     private var mWeatherCity : TextView? = null
     private var mWeatherTemperture : TextView? = null
     private var mWeatherDesc : TextView? = null
@@ -57,21 +52,24 @@ class MainActivity : AppCompatActivity(){
     private var locationId: String? = null
 
     private var listAdapter : WeatherListAdapter? = null
-    private var mHandler : Handler = Handler{msg ->
+    private var mHandler : Handler = Handler{ msg ->
         when(msg.what){
-            1 ->{
+            1 -> {
                 cityName = msg.obj.toString()
                 mWeatherCity?.text = cityName
                 getCityLocation(cityName!!)
 
             }
-            2 ->{
+            2 -> {
                 locationId = msg.obj.toString()
                 locationId?.let {
                     getWeatherInfo(it)
                     getThreeDaysWeatherInfo(it)
+                    getAirInfo(it)
                 }
-
+            }
+            3->{
+                getLocation()
             }
         }
         false
@@ -80,27 +78,25 @@ class MainActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestPermission()
         initView()
         setBackgroundAndScreen()
-        getLocation()
-
-
     }
     //根据城市名称获取城市代码
-    private fun getCityLocation(cityName:String){
+    private fun getCityLocation(cityName: String){
         var  call : Call<CityInfo> = locationService.getLocation(cityName, MyConstants.WeatherKey)
-        call.enqueue(object : Callback<CityInfo>{
+        call.enqueue(object : Callback<CityInfo> {
             override fun onResponse(
                 call: Call<CityInfo>,
                 response: Response<CityInfo>
             ) {
                 var locations = response.body()?.location
-                if(locations!= null && locations.isNotEmpty()){
-                    var msg : Message = Message()
+                if (locations != null && locations.isNotEmpty()) {
+                    var msg: Message = Message()
                     msg.what = 2
                     msg.obj = locations[0].id
                     mHandler.sendMessage(msg)
-               }
+                }
             }
 
             override fun onFailure(call: Call<CityInfo>, t: Throwable) {
@@ -122,9 +118,12 @@ class MainActivity : AppCompatActivity(){
         mLocationClient.start()
     }
     //获取城市天气状况
-    private fun getWeatherInfo(locationId:String){
-        val call :Call<WeatherData> = weatherService.getLiveWeatherData(locationId,MyConstants.WeatherKey)
-        call.enqueue(object :Callback<WeatherData>{
+    private fun getWeatherInfo(locationId: String){
+        val call :Call<WeatherData> = weatherService.getLiveWeatherData(
+            locationId,
+            MyConstants.WeatherKey
+        )
+        call.enqueue(object : Callback<WeatherData> {
             override fun onResponse(call: Call<WeatherData>, response: Response<WeatherData>) {
                 var now = response.body()?.now
                 if (now != null) {
@@ -138,12 +137,17 @@ class MainActivity : AppCompatActivity(){
 
         })
     }
-    private fun getThreeDaysWeatherInfo(locationId:String){
-        val call : Call<ThreeDaysWeatherData> = weatherService.getThreeDaysWeatherData(locationId,MyConstants.WeatherKey)
-        call.enqueue(object :Callback<ThreeDaysWeatherData>{
-            override fun onResponse(call: Call<ThreeDaysWeatherData>, response: Response<ThreeDaysWeatherData>) {
-                Log.d(TAG,response.body()?.daily.toString())
-                listAdapter = response.body()?.daily?.let { WeatherListAdapter(it,baseContext) }
+    private fun getThreeDaysWeatherInfo(locationId: String){
+        val call : Call<ThreeDaysWeatherData> = weatherService.getThreeDaysWeatherData(
+            locationId,
+            MyConstants.WeatherKey
+        )
+        call.enqueue(object : Callback<ThreeDaysWeatherData> {
+            override fun onResponse(
+                call: Call<ThreeDaysWeatherData>,
+                response: Response<ThreeDaysWeatherData>
+            ) {
+                listAdapter = response.body()?.daily?.let { WeatherListAdapter(it, baseContext) }
                 mWeatherList?.adapter = listAdapter
                 mWeatherList?.layoutManager = LinearLayoutManager(baseContext)
             }
@@ -151,7 +155,24 @@ class MainActivity : AppCompatActivity(){
             override fun onFailure(call: Call<ThreeDaysWeatherData>, t: Throwable) {
                 Log.d(TAG, t.toString())
             }
+        })
+    }
+    private fun getAirInfo(locationId: String){
+        val call : Call<AirData> = weatherService.getAirData(
+            locationId,
+            MyConstants.WeatherKey
+        )
+        call.enqueue(object : Callback<AirData> {
+            override fun onResponse(
+                call: Call<AirData>,
+                response: Response<AirData>
+            ) {
+                response.body()?.now?.category?.let {mWeatherAir?.text = it }
+            }
 
+            override fun onFailure(call: Call<AirData>, t: Throwable) {
+                Log.d(TAG, t.toString())
+            }
         })
     }
     private fun initView(){
@@ -165,14 +186,13 @@ class MainActivity : AppCompatActivity(){
 
     }
     //根据获取到的天气情况设置view
-    private fun setData(now : WeatherData.Now){
+    private fun setData(now: WeatherData.Now){
         mWeatherDesc?.text = now.text
         mWeatherTemperture?.text = now.temp
         mWeatherWind?.text = now.windDir
-        mWeatherWet?.text = "相对湿度："+now.humidity+"%"
         var iconName = "icon"+now.icon
         //这里不能写mipmap-xxxhdpi 会找不到资源
-        var iconRes = baseContext.resources.getIdentifier(iconName,"mipmap",packageName)
+        var iconRes = baseContext.resources.getIdentifier(iconName, "mipmap", packageName)
         mWeatherIcon?.setImageResource(iconRes)
     }
     //根据时间设置app的背景图片
@@ -193,5 +213,24 @@ class MainActivity : AppCompatActivity(){
             //傍晚
             mContentPanel?.setBackgroundResource(R.mipmap.afternoon)
         }
+    }
+
+    private fun requestPermission(){
+        XXPermissions.with(this)
+            .constantRequest()
+            .request(object: OnPermission {
+                override fun hasPermission(granted: MutableList<String>?, isAll: Boolean) {
+                    var msg:Message = Message()
+                    msg.what = 3
+                    mHandler.sendMessage(msg)
+                }
+
+                override fun noPermission(denied: MutableList<String>?, quick: Boolean) {
+                    Toast.makeText(this@MainActivity,"无法获取权限，应用无法正常使用",Toast.LENGTH_SHORT).show()
+                    XXPermissions.gotoPermissionSettings(this@MainActivity)
+
+                }
+
+            })
     }
 }
