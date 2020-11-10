@@ -3,7 +3,7 @@ package com.example.weather.bean
 import android.location.Location
 import com.google.gson.annotations.SerializedName
 
-data class CityInfo(val status: String, val locations: List<Location>) {
+data class CityInfo(val code: String, val location: List<Location>) {
 
     data class Location(
         var name: String, var id: String,

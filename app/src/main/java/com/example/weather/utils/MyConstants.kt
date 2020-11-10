@@ -9,7 +9,7 @@ class MyConstants {
         var WeatherKey = "e50f48652b5b403d9bfa494ffdc6f1c8"
 
         var BaseCityUrl : String = "https://geoapi.qweather.com/"
-        var BaseWeatherUrl : String = "https://devapi.qweather.com/v7/"
+        var BaseWeatherUrl : String = "https://devapi.qweather.com/"
         //获取 城市代号   location/key
         var GetLocationCodeUrl = "v2/city/lookup?"
         //获取实况天气  location/key

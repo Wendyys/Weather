@@ -3,8 +3,8 @@ package com.example.weather.bean
 data class WeatherData(
     val code: String,
     val fxLink: String,
-    val now: AirData.Now,
-    val refer: AirData.Refer,
+    val now: WeatherData.Now,
+    val refer: WeatherData.Refer,
     val updateTime: String
 ){
     data class Now(
