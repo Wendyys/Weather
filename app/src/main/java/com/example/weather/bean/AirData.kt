@@ -7,7 +7,7 @@ data class AirData(
     val refer: Refer,
     val station: List<Station>,
     val updateTime: String
-){
+) {
     data class Now(
         val aqi: String,
         val category: String,

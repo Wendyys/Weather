@@ -6,7 +6,7 @@ data class WarningData(
     val refer: Refer,
     val updateTime: String,
     val warning: List<Warning>
-){
+) {
     data class Refer(
         val license: List<String>,
         val sources: List<String>

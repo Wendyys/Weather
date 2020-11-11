@@ -6,7 +6,7 @@ data class WeatherData(
     val now: WeatherData.Now,
     val refer: WeatherData.Refer,
     val updateTime: String
-){
+) {
     data class Now(
         val cloud: String,
         val dew: String,

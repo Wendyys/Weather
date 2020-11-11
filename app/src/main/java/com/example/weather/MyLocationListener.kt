@@ -2,11 +2,8 @@ package com.example.weather
 
 import android.os.Handler
 import android.os.Message
-import android.util.Log
-import android.widget.Toast
 import com.baidu.location.BDAbstractLocationListener
 import com.baidu.location.BDLocation
-import kotlin.coroutines.coroutineContext
 
 
 class MyLocationListener(var mHandler: Handler) : BDAbstractLocationListener() {

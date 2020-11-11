@@ -1,8 +1,5 @@
 package com.example.weather.bean
 
-import android.location.Location
-import com.google.gson.annotations.SerializedName
-
 data class CityInfo(val code: String, val location: List<Location>) {
 
     data class Location(

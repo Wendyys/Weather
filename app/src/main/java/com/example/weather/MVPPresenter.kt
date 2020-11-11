@@ -1,7 +1,6 @@
 package com.example.weather
 
 import android.content.Context
-import android.os.Handler
 import android.os.Message
 import android.util.Log
 import com.baidu.location.LocationClient
@@ -11,18 +10,19 @@ import com.example.weather.bean.AirData
 import com.example.weather.bean.CityInfo
 import com.example.weather.bean.ThreeDaysWeatherData
 import com.example.weather.bean.WeatherData
-import com.example.weather.network.NetworkApi
 import com.example.weather.network.CityService
-import com.example.weather.utils.MyConstants
+import com.example.weather.network.NetworkApi
 import com.example.weather.network.WeatherService
+import com.example.weather.utils.MyConstants
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(),  WeakHandler.IHandler{
+class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(), WeakHandler.IHandler {
     //private  var mView :BaseView? = null
     private var locationService: NetworkApi = CityService.create(NetworkApi::class.java)
     private var weatherService: NetworkApi = WeatherService.create(NetworkApi::class.java)
+
     //避免内存泄漏
     private var handler: WeakHandler = WeakHandler(this)
     private var myListener: MyLocationListener = MyLocationListener(handler)
@@ -41,6 +41,7 @@ class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(),  WeakHa
         mLocationClient.locOption = option
         mLocationClient.start()
     }
+
     //根据城市名称获取城市代码
     private fun getCityLocation(cityName: String) {
         var call: Call<CityInfo> = locationService.getLocation(cityName, MyConstants.WeatherKey)
@@ -65,6 +66,7 @@ class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(),  WeakHa
 
         })
     }
+
     //获取城市天气状况
     private fun getWeatherInfo(locationId: String) {
         val call: Call<WeatherData> = weatherService.getLiveWeatherData(
@@ -81,6 +83,7 @@ class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(),  WeakHa
             }
         })
     }
+
     //获取3天天气
     private fun getThreeDaysWeatherInfo(locationId: String) {
         val call: Call<ThreeDaysWeatherData> = weatherService.getThreeDaysWeatherData(
@@ -100,6 +103,7 @@ class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(),  WeakHa
             }
         })
     }
+
     //获取空气情况
     private fun getAirInfo(locationId: String) {
         val call: Call<AirData> = weatherService.getAirData(
