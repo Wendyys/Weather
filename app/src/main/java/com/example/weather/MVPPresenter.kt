@@ -19,8 +19,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MVPPresenter(var context: Context) :WeakHandler.IHandler{
-    private  var mView :BaseView? = null
+class MVPPresenter(var context: Context) : BasePresenter(),  WeakHandler.IHandler{
+    //private  var mView :BaseView? = null
     private var locationService: NetworkApi = CityService.create(NetworkApi::class.java)
     private var weatherService: NetworkApi = WeatherService.create(NetworkApi::class.java)
     //避免内存泄漏
@@ -29,15 +29,6 @@ class MVPPresenter(var context: Context) :WeakHandler.IHandler{
     lateinit var mLocationClient: LocationClient
     private var cityName: String? = null
     var TAG: String = "VVWeather"
-
-    fun attach(view: BaseView) {
-        mView = view
-    }
-
-    fun detach() {
-        mView = null
-    }
-
 
     //获取城市名称
     fun getLocation() {

@@ -22,7 +22,6 @@ class WeatherListAdapter(private val entityList : List<Daily>,private val contex
         holder.mListWeather.text = entity.textDay
         holder.mListTemp.text = entity.tempMin +" ~ "+entity.tempMax+"℃"
         holder.mListWind.text = entity.windDirDay
-
         var iconName = "icon"+entity.iconDay
         var iconRes = context.resources.getIdentifier(iconName,"mipmap",context.packageName)
         holder.mListIcon.setImageResource(iconRes)
