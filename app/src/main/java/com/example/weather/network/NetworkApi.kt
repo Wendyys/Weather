@@ -16,9 +16,6 @@ public interface NetworkApi {
     //获取空气质量
     @GET("v7/air/now?")
     fun getAirData(@Query("location") location: String, @Query("key") key: String): Call<AirData>
-    //获取预警
-    @GET("v7/warning/now?")
-    fun getWarning(@Query("location") location: String, @Query("key") key: String): Call<WarningData>
     //获取3天天气预报
     @GET("v7/weather/3d?")
     fun getThreeDaysWeatherData(@Query("location") location: String, @Query("key") key: String): Call<ThreeDaysWeatherData>
