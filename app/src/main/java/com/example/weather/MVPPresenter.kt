@@ -19,7 +19,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MVPPresenter(var context: Context) : BasePresenter(),  WeakHandler.IHandler{
+class MVPPresenter(var context: Context) : BasePresenter<WeatherView>(),  WeakHandler.IHandler{
     //private  var mView :BaseView? = null
     private var locationService: NetworkApi = CityService.create(NetworkApi::class.java)
     private var weatherService: NetworkApi = WeatherService.create(NetworkApi::class.java)

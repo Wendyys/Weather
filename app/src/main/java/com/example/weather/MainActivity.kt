@@ -15,7 +15,7 @@ import com.hjq.permissions.OnPermission
 import com.hjq.permissions.XXPermissions
 import java.util.*
 
-class MainActivity : AppCompatActivity(), BaseView {
+class MainActivity : AppCompatActivity(), WeatherView {
 
     private lateinit var mContentPanel: RelativeLayout
     private lateinit var mWeatherCity: TextView
