@@ -4,3 +4,4 @@
 ### 使用了MVP架构
 ### 使用了和风天气和百度地图SDK
 
+<img src = https://github.com/Wendyys/Weather/blob/master/app/src/main/res/drawable/preview.jpeg width = 200>
