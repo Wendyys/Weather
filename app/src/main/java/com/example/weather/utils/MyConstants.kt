@@ -3,8 +3,7 @@ package com.example.weather.utils
 /**
  * 存放常用变量
  */
-class MyConstants {
-    companion object{
+object MyConstants {
         var BaiduMapKey = "Y7b6N0ziD3vSvuvdIaYE85gbZFKphv3S"
         var WeatherKey = "e50f48652b5b403d9bfa494ffdc6f1c8"
 
@@ -18,6 +17,4 @@ class MyConstants {
         var GetAirDataUrl = "v7/air/now?"
         //获取实时灾害预警 location/key
         var GetWarningDataUrl = "v7/warning/now?"
-    }
-
 }

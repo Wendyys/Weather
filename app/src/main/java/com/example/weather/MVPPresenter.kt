@@ -6,6 +6,7 @@ import android.os.Message
 import android.util.Log
 import com.baidu.location.LocationClient
 import com.baidu.location.LocationClientOption
+import com.bytedance.common.utility.collection.WeakHandler
 import com.example.weather.bean.AirData
 import com.example.weather.bean.CityInfo
 import com.example.weather.bean.ThreeDaysWeatherData
@@ -18,26 +19,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MVPPresenter(var context: Context) {
+class MVPPresenter(var context: Context) :WeakHandler.IHandler{
     private  var mView :BaseView? = null
     private var locationService: NetworkApi = CityService.create(NetworkApi::class.java)
     private var weatherService: NetworkApi = WeatherService.create(NetworkApi::class.java)
-    private var handler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-                1 -> {
-                    cityName = msg.obj as String
-
-                    cityName?.let {
-                        mView?.updateCityName(it)
-                        getCityLocation(it)
-                    }
-
-                }
-            }
-        }
-    }
+    //避免内存泄漏
+    private var handler: WeakHandler = WeakHandler(this)
     private var myListener: MyLocationListener = MyLocationListener(handler)
     lateinit var mLocationClient: LocationClient
     private var cityName: String? = null
@@ -141,5 +128,19 @@ class MVPPresenter(var context: Context) {
                 Log.d(TAG, t.toString())
             }
         })
+    }
+
+    override fun handleMsg(msg: Message?) {
+        when (msg?.what) {
+            1 -> {
+                cityName = msg.obj as String
+
+                cityName?.let {
+                    mView?.updateCityName(it)
+                    getCityLocation(it)
+                }
+
+            }
+        }
     }
 }

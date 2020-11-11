@@ -17,14 +17,14 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), BaseView {
 
-    private var mContentPanel: RelativeLayout? = null
-    private var mWeatherCity: TextView? = null
-    private var mWeatherTemperture: TextView? = null
-    private var mWeatherDesc: TextView? = null
-    private var mWeatherWind: TextView? = null
-    private var mWeatherList: RecyclerView? = null
-    private var mWeatherAir: TextView? = null
-    private var listAdapter: WeatherListAdapter? = null
+    private lateinit var mContentPanel: RelativeLayout
+    private lateinit var mWeatherCity: TextView
+    private lateinit var mWeatherTemperture: TextView
+    private lateinit var mWeatherDesc: TextView
+    private lateinit var mWeatherWind: TextView
+    private lateinit var mWeatherList: RecyclerView
+    private lateinit var mWeatherAir: TextView
+    private lateinit var listAdapter: WeatherListAdapter
     private lateinit var mPresenter: MVPPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,22 +91,22 @@ class MainActivity : AppCompatActivity(), BaseView {
     }
 
     override fun updateWeatherInfo(weatherData: WeatherData) {
-        mWeatherDesc?.text = weatherData.now.text
-        mWeatherTemperture?.text = weatherData.now.temp
-        mWeatherWind?.text = weatherData.now.windDir
+        mWeatherDesc.text = weatherData.now.text
+        mWeatherTemperture.text = weatherData.now.temp
+        mWeatherWind.text = weatherData.now.windDir
     }
 
     override fun updateCityName(cityInfo: String) {
-        mWeatherCity?.text = cityInfo
+        mWeatherCity.text = cityInfo
     }
 
     override fun updateAirInfo(airData: AirData) {
-        mWeatherAir?.text = airData.now.category
+        mWeatherAir.text = airData.now.category
     }
 
     override fun updateWeatherInfoThreeDays(threeDaysWeatherData: ThreeDaysWeatherData) {
         listAdapter = WeatherListAdapter(threeDaysWeatherData.daily, baseContext)
-        mWeatherList?.adapter = listAdapter
-        mWeatherList?.layoutManager = LinearLayoutManager(baseContext)
+        mWeatherList.adapter = listAdapter
+        mWeatherList.layoutManager = LinearLayoutManager(baseContext)
     }
 }
